@@ -1,7 +1,8 @@
 
 
 
-module.exports = function() {
+module.exports = function(opts) {
+  opts = opts||{}
   var reg = {}
 
   // currently active values
@@ -14,12 +15,14 @@ module.exports = function() {
 
   reg.dump = function() {
     return {
+      opts: opts,
       values: values,
       tombstones: tombstones
     }
   }
 
   reg.load = function(dump) {
+    opts = dump.opts
     values = dump.values
     tombstones = dump.tombstones
     setCurrentTag()
@@ -43,7 +46,8 @@ module.exports = function() {
       previousTags = Array.isArray(previousTags) ? previousTags : [previousTags]
       previousTags.forEach(function(pt) {
         delete values[pt]
-        tombstones[pt] = 1
+        if (!opts.noTombstones)
+          tombstones[pt] = 1
       })
     }
 

@@ -143,3 +143,52 @@ tape('add after remove', function (t) {
 
   t.end()
 })
+
+tape('NO TOMBSTONES simple branching sequence of values', function (t) {
+  var reg = mview.register({ noTombstones: true })
+
+  console.log(null, 0, 'A')
+  reg.set(null, 0, 'A')
+  t.equal(reg.toObject(), 'A')
+  console.log(reg.dump())
+
+  console.log(0, 1, 'B')
+  reg.set(0, 1, 'B')
+  t.equal(reg.toObject(), 'B')
+  console.log(reg.dump())
+
+  console.log(0, 2, 'C')
+  reg.set(0, 2, 'C')
+  t.equal(reg.toObject(), 'B')
+  console.log(reg.dump())
+
+  console.log([1,2], 3, 'D')
+  reg.set([1,2], 3, 'D')
+  t.equal(reg.toObject(), 'D')
+  console.log(reg.dump())
+  t.end()
+})
+
+tape('NO TOMBSTONES failed add after remove', function (t) {
+  var reg = mview.register({ noTombstones: true })
+
+  console.log(null, 0, 'A')
+  reg.set(null, 0, 'A')
+  t.equal(reg.toObject(), 'A')
+  console.log(reg.dump())
+
+  console.log([0, 1], 2, 'C')
+  reg.set([0, 1], 2, 'C')
+  t.equal(reg.toObject(), 'C')
+  console.log(reg.dump())
+
+  console.log(0, 1, 'B')
+  reg.set(0, 1, 'B')
+  t.equal(reg.toObject(), 'B')
+  console.log(reg.dump())
+  // NOTE: this result is actually incorrect, as expected
+  // tombstones are required if causal message-order is not guaranteed by the application
+  // this test demonstrates that failure
+
+  t.end()
+})
