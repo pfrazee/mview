@@ -63,6 +63,47 @@ tree.map(parentTag, function(tag, value, index))
 ## Example usage
 
 
+A simple example:
+
+```js
+var mview = require('mview')
+var messenger = require('...') // your custom message-bus
+
+// declare our materializer
+var title = mview.register()
+
+// set some default initial values
+title.set(null, 0, 'Favorite Bands 2014') // no previous tags, use `0` as the new tag
+
+// message-creator
+function setTitle(v) {
+  // emit
+  var msg = messenger.broadcast({
+    type: 'set-title'
+    value: v,
+    prevTags: title.tags()
+  })
+  // handle locally
+  onMessage(msg)
+}
+
+// message-handler
+function onMessage(msg) {
+  if (msg.type == 'set-title') {
+    title.set(msg.prevTags, msg.id, ''+msg.value)
+    render()
+  }
+}
+messenger.on('incoming-msg', onMessage)
+
+// renderer
+function render() {
+  document.getElementById('title').textContent = title.toObject()
+}
+```
+
+Something more complex:
+
 ```js
 var mlib = require('ssb-msgs')
 var mview = require('mview')
@@ -124,7 +165,7 @@ function process(msg) {
 
     // update title
     var tags = prevs.map(function(link) { return link.$msg })
-    title.set(title, msg.id, tags)
+    title.set(tags, msg.id, title)
   }
 }
 
@@ -172,7 +213,7 @@ function addComment(text, parent) {
 
 // the view renderer
 function render() {
-  renderHeader(title.toString())
+  renderHeader(title.toObject())
 
   for (name in bandLikes) {
     var likes = bandLikes[name].count()
