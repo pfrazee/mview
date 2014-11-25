@@ -33,28 +33,29 @@ tree.remove(tag, value)
 // read operations
 // - called to get the current state
 
+reg.toObject()
 reg.tags()
-reg.toString()
 
+set.toObject()
 set.has(value)
-set.tags(value)
 set.count()
 set.forEach(function(tags, value, index))
 set.map(function(tags, value, index))
-set.toObject()
+set.tags(value)
 
+list.toObject()
 list.get(index)
-list.tags(index)
 list.count()
 list.forEach(function(tag, value, index))
 list.map(function(tag, value, index))
-list.toObject()
+list.tags(index)
 
+tree.toObject() // produces recursive structure of {tag:, value:, children:[...]}
+tree.child(parentTag, index) //=> {tag:, value:}
 tree.children(parentTag) //=> array of {tag:, value:}
 tree.count(parentTag) //=> number
-tree.forEach(parentTag, function(tag, value))
-tree.map(parentTag, function(tag, value))
-tree.toObject()
+tree.forEach(parentTag, function(tag, value, index))
+tree.map(parentTag, function(tag, value, index))
 // - tree has one root node, `null`, from which all nodes descend
 ```
 
@@ -78,7 +79,7 @@ var bandLikes = {}
 var comments = mview.tree()
 
 // set some default initial values
-title.set('Favorite Bands 2014', 0) // use `0` as the tag
+title.set(null, 0, 'Favorite Bands 2014') // no previous tags, use `0` as the new tag
 
 // the message processor
 function sync(cb) {
