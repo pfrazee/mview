@@ -1,0 +1,20 @@
+{
+  "name": "mview",
+  "description": "View materialization utilities for distributed databases",
+  "version": "0.1.0",
+  "homepage": "https://github.com/pfraze/mview",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pfraze/mview.git"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "tape": "~3.0.0"
+  },
+  "scripts": {
+    "test": "set -e; for t in test/*.js; do node $t; done"
+  },
+  "author": "Paul Frazee <pfrazee@gmail.com>",
+  "license": "MIT"
+}
