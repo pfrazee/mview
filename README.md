@@ -27,7 +27,7 @@ opts = {
 }
 ```
 
-Tombstone tracking comes with some overhead, but allows messages to arrive out of order. Nodes which implement their own mechanism for maintaining causal order can disable tombstones.
+[Tombstone](https://en.wikipedia.org/wiki/Tombstone_%28data_store%29) tracking comes with some overhead, but allows messages to arrive out of order. Nodes which implement their own mechanism for maintaining causal order can disable tombstones.
 
 ### Using MView
 
