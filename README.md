@@ -1,6 +1,6 @@
 # MView - Materialized Views Library
 
-MView is a utility library for distributed databases. It accepts data from the network messages and, using [Causally-Consistenct Ops-based CRDTs](http://gsd.di.uminho.pt/members/cbm/ps/crdtOpsMiddleware.pdf), produces data structures which are consistent across all nodes.
+MView is a utility library for distributed databases. It accepts data from the network messages and, using the Observed-Remove and Logoot CRDTs, produces data structures which are consistent across all nodes.
 
 MView does not store its output or generate its messages. It is purely a [view materialization](https://en.wikipedia.org/wiki/Materialized_view) library. All of its data is kept in memory.
 
