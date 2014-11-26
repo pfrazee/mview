@@ -24,8 +24,8 @@ reg.set(previousTags, tag, value)
 set.add(tag, value)
 set.remove(tag|tags, value)
 
-list.insert(priorTag, tag, value)
-list.remove(tag, value)
+list.insert(tag, value)
+list.remove(tag)
 
 tree.insert(parentTag, tag, value)
 tree.remove(tag, value)
@@ -44,11 +44,15 @@ set.map(function(tags, value, index))
 set.tags(value)
 
 list.toObject()
-list.get(index)
+list.get(index|tag)
 list.count()
 list.forEach(function(tag, value, index))
 list.map(function(tag, value, index))
 list.tags(index)
+list.between(tagA, tagB, [uid])
+// - unlike the register and set, the list helps generates tags using between()
+// - register and set must provide their own tags; for secure-scuttlebutt, they will often be the message ids
+// - in the list, you may pass the message ids as the 3rd param of between() to give stronger collision resistence
 
 tree.toObject() // produces recursive structure of {tag:, value:, children:[...]}
 tree.child(parentTag, index) //=> {tag:, value:}
