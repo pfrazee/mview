@@ -8,7 +8,8 @@
     "url": "git://github.com/pfraze/mview.git"
   },
   "dependencies": {
-    "between": "~0.1.1"
+    "between": "~0.1.1",
+    "adiff": "~0.2.13"
   },
   "devDependencies": {
     "tape": "~3.0.0"
