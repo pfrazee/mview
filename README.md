@@ -31,7 +31,7 @@ opts = {
 
 MView is designed for distributed programs with reliable message broadcast. It was specifically built for [secure scuttlebutt](https://github.com/dominictarr/secure-scuttlebutt). It supports 4 different view types: registers, text buffers, sets, and ordered lists. The views are instantiated by the node's software at load, then used as follows:
 
- 1. To generate view updates. These updates are broadcast on the distributed network.
+ 1. To generate view updates. These updates are broadcast on the network.
  2. To consume updates. As update-messages are received from the network, they are fed to the views.
  3. To produce the current state. When the node software needs to use the views, it asks them for their values.
 
