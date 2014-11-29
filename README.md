@@ -1,8 +1,6 @@
 # MView - Materialized Views Library
 
-MView is a utility library for distributed databases. It accepts data from the network messages and, using the Observed-Remove and Logoot CRDTs, produces data structures which are consistent across all nodes.
-
-MView does not store its output or generate its messages. It is purely a [view materialization](https://en.wikipedia.org/wiki/Materialized_view) library. All of its data is kept in memory.
+MView is a distributed datatypes library. It consumes data-feeds and produces [materialized views](https://en.wikipedia.org/wiki/Materialized_view) as javascript objects. State is kept in memory, but may be persisted through the dump/load api.
 
 ## API Overview
 
@@ -27,17 +25,17 @@ opts = {
 }
 ```
 
-[Tombstone](https://en.wikipedia.org/wiki/Tombstone_%28data_store%29) tracking comes with some overhead, but allows messages to arrive out of order. Nodes which implement their own mechanism for maintaining causal order can disable tombstones.
+[Tombstone tracking](https://en.wikipedia.org/wiki/Tombstone_%28data_store%29) is a technique to ensure consistency. It adds memory overhead, but allows messages to arrive out of order. Applications which implement their own causal ordering may disable tombstones.
 
 ### Using MView
 
-MView is designed for distributed systems with reliable message broadcast. It was specifically built for [secure scuttlebutt](https://github.com/dominictarr/secure-scuttlebutt). It supports 4 different view types: registers, text buffers, sets, and ordered lists. The views are instantiated by the node's software at load, then used as follows:
+MView is designed for distributed programs with reliable message broadcast. It was specifically built for [secure scuttlebutt](https://github.com/dominictarr/secure-scuttlebutt). It supports 4 different view types: registers, text buffers, sets, and ordered lists. The views are instantiated by the node's software at load, then used as follows:
 
- 1. To generate view updates. These updates are broadcast on the distributed network.
+ 1. To generate view updates. These updates are broadcast on the network.
  2. To consume updates. As update-messages are received from the network, they are fed to the views.
  3. To produce the current state. When the node software needs to use the views, it asks them for their values.
 
-In the examples below, there will be two functions which represent the distributed system's interface: `distsys.broadcast()` and `distsys.on('msg')`.
+In the examples below, there will be two functions which represent the networks's interface: `net.broadcast()` and `net.on('msg')`.
 
  - Assume that `broadcast()` takes a message object and sends it to all nodes (including the local node). 
  - Assume that `on('msg')` is called each time there is a new message from the local node or a remote node.
@@ -65,13 +63,13 @@ Example Usage:
 ```js
 var cuid = require('cuid')
 function setRegister(value) {
-  distsys.broadcast({
+  net.broadcast({
     previousTags: reg.tags()
     tag: cuid(),
     value: value
   })
 }
-distsys.on('msg', function (msg) {
+net.on('msg', function (msg) {
   reg.set(msg.previousTags, msg.tag, msg.value)
 })
 ```
@@ -98,11 +96,11 @@ Example Usage:
 
 ```js
 function setText(value) {
-  distsys.broadcast({
+  net.broadcast({
     diff: text.diff(value)
   })
 }
-distsys.on('msg', function (msg) {
+net.on('msg', function (msg) {
   text.update(msg.diff)
 })
 ```
@@ -137,20 +135,20 @@ Example Usage:
 ```js
 var cuid = require('cuid')
 function addToSet(v) {
-  distsys.broadcast({
+  net.broadcast({
     type: 'add',
     tag: cuid(),
     value: v
   })
 }
 function removeFromSet(v) {
-  distsys.broadcast({
+  net.broadcast({
     type: 'remove',
     value: v,
     tags: set.tags(v)
   })
 }
-distsys.on('msg', function (msg) {
+net.on('msg', function (msg) {
   if (msg.type == 'add')
     set.add(msg.tag, msg.value)
   if (msg.type == 'remove')
@@ -191,33 +189,33 @@ Example Usage:
 ```js
 var cuid = require('cuid')
 function append(v) {
-  distsys.broadcast({
+  net.broadcast({
     type: 'insert',
     tag: list.between(list.tags(list.count() - 1), null, cuid())
     value: v
   })
 }
 function prepend(v) {
-  distsys.broadcast({
+  net.broadcast({
     type: 'insert',
     tag: list.between(null, list.tags(0), cuid())
     value: v
   })
 }
 function insert(i, v) {
-  distsys.broadcast({
+  net.broadcast({
     type: 'insert',
     tag: list.between(list.tags(i-1), list.tags(i), cuid())
     value: v
   })
 }
 function remove(i) {
-  distsys.broadcast({
+  net.broadcast({
     type: 'remove',
     tag: set.tags(i)
   })
 }
-distsys.on('msg', function (msgid, msg) {
+net.on('msg', function (msgid, msg) {
   if (msg.type == 'insert')
     list.insert(msg.tag, msg.value)
   if (msg.type == 'remove')
