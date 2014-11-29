@@ -42,7 +42,7 @@ In the examples below, there will be two functions which represent the networks'
 
 ### Registers
 
-Register views are opaque values. They are designed to converge on the most recent update value, and will not merge the values given.
+Register views are opaque values. They are designed to converge on the most recent update value, and will not merge the values given. Its algorithm is based on the Observed Remove Set CRDT.
 
 ```js
 var reg = mview.register()
@@ -76,7 +76,7 @@ net.on('msg', function (msg) {
 
 ### Text
 
-Text views are strings. They are designed to merge updates so that users can make concurrent updates to its contents.
+Text views are strings. They are designed to merge updates so that users can make concurrent updates to its contents. Its algorithm is based on the Logoot CRDT.
 
 ```js
 var text = mview.text()
@@ -107,7 +107,7 @@ net.on('msg', function (msg) {
 
 ### Set
 
-Set views are unordered sets of unique values.
+Set views are unordered sets of unique values. Its algorithm is based on the Observed Remove Set CRDT.
 
 ```js
 var set = mview.set()
@@ -158,7 +158,7 @@ net.on('msg', function (msg) {
 
 ### List
 
-List views are ordered arrays of values.
+List views are ordered arrays of values. Its algorithm is based on the Logoot CRDT.
 
 ```js
 var list = mview.list()
