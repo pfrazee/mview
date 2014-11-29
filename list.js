@@ -73,6 +73,8 @@ module.exports = function(opts) {
       return
 
     // add to our tracking
+    if (values[tag])
+      return
     values[tag] = value
     tags.push(tag)
     tags.sort()

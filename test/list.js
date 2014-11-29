@@ -146,3 +146,73 @@ tape('NO TOMBSTONES failed insert after remove', function (t) {
 
   t.end()
 })
+
+function sim(numNodes) {
+  var updates = []
+  var lists = []
+  for (var i = 0; i < numNodes; i++)
+    lists.push(mview.list())
+
+  var curTag = 0
+  function makeTag() { return ++curTag }
+  function apply(list, update) {
+    if (update[0] == 'insert')
+      list.insert.apply(list, update.slice(1))
+    if (update[0] == 'remove')
+      list.remove.apply(list, update.slice(1))
+  }
+  function pickIndex(n) {
+    return (Math.random()*n)|0
+  }
+  function pickList() {
+    return lists[pickIndex(numNodes)] || lists[0]
+  }
+
+  // iterate A-Z
+  for (var i='A'.charCodeAt(0); i <= 'Z'.charCodeAt(0); i++) {
+    // apply to three lists
+    for (var j=0; j < 3; j++) {
+      var list = pickList()
+      var index = pickIndex(list.count())
+      var update = ['insert', list.between(list.tags(index), list.tags(index+1), makeTag()), String.fromCharCode(i)]
+
+      // apply the update to the chosen list, then store for the others to run later
+      apply(list, update)
+      updates.push(update)
+    }
+  }
+
+  // iterate 15 times
+  for (var i=0; i < 15; i++) {
+    var list = pickList()
+    var index = pickIndex(list.count())
+    var update = ['remove', list.tags(index)]
+
+    // apply the update to the chosen list, then store for the others to run later
+    apply(list, update)
+    updates.push(update)
+  }
+
+  // run all updates on all registers
+  updates.forEach(function(update) {
+    lists.forEach(function(list) {
+      apply(list, update)
+    })
+  })  
+
+  return lists
+}
+
+tape('network sim: 2-16 nodes', function(t) {
+  for (var numNodes = 2; numNodes <= 16; numNodes++) {
+    var lists = sim(numNodes)
+
+    console.log(lists[0].count())
+    for (var j=1; j < numNodes; j++) {
+      console.log(lists[j].count())
+      t.assert(listEqual(lists[0].toObject(), lists[j].toObject()))
+    }
+  }
+
+  t.end()
+})
