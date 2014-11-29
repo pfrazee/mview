@@ -49,6 +49,7 @@ tape('linear sequence of values', function (t) {
   reg.set(5, 6, 'G')
   t.equal(reg.toObject(), 'G')
   console.log(reg.dump())
+
   t.end()
 })
 
@@ -74,6 +75,7 @@ tape('simple branching sequence of values', function (t) {
   reg.set([1,2], 3, 'D')
   t.equal(reg.toObject(), 'D')
   console.log(reg.dump())
+
   t.end()
 })
 
@@ -189,6 +191,58 @@ tape('NO TOMBSTONES failed add after remove', function (t) {
   // NOTE: this result is actually incorrect, as expected
   // tombstones are required if causal message-order is not guaranteed by the application
   // this test demonstrates that failure
+
+  t.end()
+})
+
+function sim(numNodes) {
+  var updates = []
+  var regs = []
+  for (var i = 0; i < numNodes; i++)
+    regs.push(mview.register())
+
+  var curTag = 0
+  function makeTag() { return ++curTag }
+  function pickReg() {
+    return regs[(Math.random()*numNodes)|0] || reg[0]
+  }
+
+  // iterate A-Z
+  for (var i='A'.charCodeAt(0); i <= 'Z'.charCodeAt(0); i++) {
+    var reg = pickReg()
+    var update = [reg.tags(), makeTag(), String.fromCharCode(i)]
+
+    // apply the update to the chosen register, then store for the others to run later
+    reg.set.apply(reg, update)
+    updates.push(update)
+  }
+
+  // run all updates on all registers
+  updates.forEach(function(update) {
+    regs.forEach(function(reg) {
+      reg.set.apply(reg, update)
+    })
+  })
+
+  return regs
+}
+
+tape('network sim: 2-16 nodes', function(t) {
+  for (var numNodes = 2; numNodes <= 16; numNodes++) {
+    var regs = sim(numNodes)
+
+    console.log(regs[0].toObject())
+    for (var j=1; j < numNodes; j++) {
+      t.equal(regs[0].toObject(), regs[j].toObject())
+      console.log(regs[j].toObject())
+    }
+
+    var tags = regs[0].tags()
+    for (var j=1; j < numNodes; j++) {
+      regs[j].set(tags, 1000, 'final')
+      t.equal(regs[j].toObject(), 'final')
+    }
+  }
 
   t.end()
 })
