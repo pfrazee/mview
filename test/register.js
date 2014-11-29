@@ -204,7 +204,7 @@ function sim(numNodes) {
   var curTag = 0
   function makeTag() { return ++curTag }
   function pickReg() {
-    return regs[(Math.random()*numNodes)|0] || reg[0]
+    return regs[(Math.random()*numNodes)|0] || regs[0]
   }
 
   // iterate A-Z
