@@ -21,7 +21,7 @@ module.exports = function(opts) {
   }
 
   text.toString = function() {
-    return chunks.toObject().join(' ')
+    return chunks.toObject().join(' ').replace(/\n /g, '\n')
   }
 
   function split(str) {
