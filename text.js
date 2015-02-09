@@ -21,12 +21,12 @@ module.exports = function(opts) {
   }
 
   text.toString = function() {
-    return chunks.toObject().join(' ').replace(/\n /g, '\n')
+    return chunks.toObject().join(' ').replace(/ \n /g, '\n')
   }
 
   function split(str) {
     // split on newlines but include newlines in the words
-    return str.replace(/\n/g, '\n ').split(/ /g)
+    return str.replace(/\n/g, ' \n ').split(/ /g)
   }
 
   text.diff = function(str) {
