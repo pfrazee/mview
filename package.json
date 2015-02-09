@@ -1,7 +1,7 @@
 {
   "name": "mview",
   "description": "View materialization utilities for distributed databases",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "homepage": "https://github.com/pfraze/mview",
   "repository": {
     "type": "git",
